@@ -1,5 +1,8 @@
 # chrome.clip.summary
-Chrome上でGPTを使いやすくするプロンプトの事前登録拡張機能
+Chrome上でGPTを使いやすくするプロンプトの事前登録拡張機能です
+
+![icon128](https://github.com/WdknWdkn/chrome.clip.summary/assets/49826943/09dea79f-7a0e-4e3f-b381-ed4ab4fb04eb)
+
 
 # 利用方法
 

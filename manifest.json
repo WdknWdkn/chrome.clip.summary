@@ -1,0 +1,23 @@
+{
+    "name": "GPTプロンプト実行ショートカット",
+    "version": "1.0",
+    "description": "予め登録したプロンプトを使ってGPTを実行するショートカットを提供します",
+    "manifest_version": 3,
+    "permissions": ["contextMenus", "activeTab", "storage"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "options.html"
+    },
+    "options_page": "options.html",
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "icons": {
+        "128": "icon128.png"
+    }
+}

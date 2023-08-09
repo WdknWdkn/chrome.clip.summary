@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container" style="max-width: 1200px; min-width:750px;">
+    <!-- Header -->
+    <header class="mt-3 mb-4">
+      <h1 class="text-center">GPTプロンプト設定</h1>
+    </header>
+
+    <!-- Body -->
+    <main>
+      <div class="mb-4">
+        <h2 class="text-center">APIキーを登録</h2>
+        <label for="apiKey">API Key:</label>
+        <input type="text" id="apiKey" name="apiKey" class="form-control">
+        <br>
+        <button id="apiKeySaveButton" class="btn btn-primary">APIキーを登録</button>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-center">プロンプトを登録</h2>
+        <div style="margin-top:15px;">
+          プロンプト名：<input type="text" id="promptName" name="promptName" class="form-control">
+        </div>
+        <div style="margin-top:15px;">
+          <label for="prompt">プロンプト:</label>
+          <textarea type="text" id="prompt" name="prompt" class="form-control" style="height:300px;"></textarea>  
+        </div>
+        <div style="margin-top:15px;">
+          <button id="promptSaveButton" class="btn btn-primary">プロンプトを登録</button>
+        </div>
+      </div>
+      <div class="mb-4" style="margin-top:15px;">
+        <h2>登録済みプロンプト一覧</h2>
+        <div>
+          <table class="table">
+            <tr>
+              <th>プロンプト名</th>
+              <th>削除</th>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 text-center">
+      <p>&copy; 2023 Clip Summary Robota</p>
+    </footer>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>

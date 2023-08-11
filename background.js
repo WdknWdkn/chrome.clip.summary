@@ -1,21 +1,21 @@
-let selectedText = "";
-let promptName = "";
+var selectedText = "";
+var promptName = "";
 
 function createContextMenus() {
-  // 既存のメニューを削除
-  chrome.contextMenus.removeAll();
+    // 既存のメニューを削除
+    chrome.contextMenus.removeAll();
 
-  // 登録されているプロンプトを取得してメニューを作成
-  chrome.storage.sync.get('prompts', function(data) {
-    const prompts = data.prompts || {};
-    for (const [name,] of Object.entries(prompts)) {
-      chrome.contextMenus.create({
-        id: name,
-        title: name,
-        contexts: ["selection"]
-      });
-    }
-  });
+    // 登録されているプロンプトを取得してメニューを作成
+    chrome.storage.sync.get('prompts', function(data) {
+        let prompts = data.prompts || {};
+        for (const [name,] of Object.entries(prompts)) {
+            chrome.contextMenus.create({
+                id: name,
+                title: name,
+                contexts: ["selection"]
+              });
+        }
+    });
 }
 
 // 拡張機能起動時にメニューを作成
@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // プロンプトの変更を監視
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-  if (namespace === 'sync' && changes.prompts) {
-    createContextMenus(); // プロンプト変更時にメニューを更新
-  }
+    if (namespace === 'sync' && changes.prompts) {
+        createContextMenus(); // プロンプト変更時にメニューを更新
+    }
 });

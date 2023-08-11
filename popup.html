@@ -15,8 +15,17 @@
     <main>
       <div class="mb-4">
         <div class="form-group">
-          <input type="text" class="form-control" id="input_error" placeholder="エラー文をここに入力">
-          <!-- <button class="btn btn-primary mt-2" id="submit_button">調査開始</button> -->
+          <p>
+            <strong>摘要プロンプト：</strong>
+            <select id="prompt_select" class="form-control"></select> 
+          </p>
+          <p id="prompt_warning" style="color:red;"></p> <!-- 追加：警告メッセージの表示部分 -->
+          <p>
+            <strong>入力テキスト：</strong><input type="text" class="form-control" id="input_error" placeholder="対象テキストをここに入力">
+          </p>
+          <p>
+            <button class="btn btn-primary mt-2" id="submit_button">プロンプト実行</button>
+          </p>
         </div>
       </div>
 

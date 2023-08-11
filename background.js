@@ -7,15 +7,15 @@ function createContextMenus() {
 
     // 登録されているプロンプトを取得してメニューを作成
     chrome.storage.sync.get('prompts', function(data) {
-    let prompts = data.prompts || {};
-    for (const [name,] of Object.entries(prompts)) {
-      chrome.contextMenus.create({
-        id: name,
-        title: name,
-        contexts: ["selection"]
-      });
-    }
-  });
+        let prompts = data.prompts || {};
+        for (const [name,] of Object.entries(prompts)) {
+            chrome.contextMenus.create({
+                id: name,
+                title: name,
+                contexts: ["selection"]
+              });
+        }
+    });
 }
 
 // 拡張機能起動時にメニューを作成

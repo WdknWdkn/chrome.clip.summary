@@ -8,7 +8,7 @@
   <div class="container" style="max-width: 1200px; min-width:800px;">
     <!-- Header -->
     <header class="mt-3 mb-4">
-      <h1 class="text-center">GPTプロンプトメモ実行</h1>
+      <h1 class="text-center">GPT4プロンプト実行</h1>
     </header>
 
     <!-- Body -->
@@ -16,12 +16,14 @@
       <div class="mb-4">
         <div class="form-group">
           <p>
-            <strong>摘要プロンプト：</strong>
-            <select id="prompt_select" class="form-control"></select> 
+            <strong>保存済み摘要プロンプト：</strong>
+            <select id="prompt_select" class="form-control">
+              <option value="">プロンプトを使用しない</option>
+            </select> 
           </p>
-          <p id="prompt_warning" style="color:red;"></p> <!-- 追加：警告メッセージの表示部分 -->
           <p>
-            <strong>入力テキスト：</strong><input type="text" class="form-control" id="input_error" placeholder="対象テキストをここに入力">
+            <strong>入力テキスト：</strong>
+            <textarea class="form-control" id="input_error" placeholder="対象テキストをここに入力" style="height:200px;"></textarea>
           </p>
           <p>
             <button class="btn btn-primary mt-2" id="submit_button">プロンプト実行</button>

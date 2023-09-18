@@ -7,7 +7,6 @@ class Investigator {
         this.inputElement = document.getElementById('input_error');
         this.questionElement = document.getElementById('question_error');
         this.resultElement = document.getElementById('result');
-        this.promptWarningElement = document.getElementById('prompt_warning');
 
         // プロンプトのロード
         this.loadPrompts();
@@ -16,8 +15,6 @@ class Investigator {
     async loadPrompts() {
         const promptsResult = await this.getFromStorage('prompts');
         if (!promptsResult.prompts || Object.keys(promptsResult.prompts).length === 0) {
-            this.submitButton.disabled = true;
-            this.promptWarningElement.innerText = 'プロンプトが未登録です。設定から登録を行ってください'; // 追加：警告メッセージの設定
             return;
         }
 
@@ -30,7 +27,7 @@ class Investigator {
           this.promptSelectElement.appendChild(option);
         }
 
-        this.promptWarningElement.innerText = ''; // 警告メッセージのクリア
+        this.promptWarningElement.innerText = '';
     }
   
     // Chromeストレージからキーに対応するデータを取得するメソッド
@@ -47,18 +44,28 @@ class Investigator {
   
         // プロンプトの取得と表示
         const promptsResult = await this.getFromStorage('prompts');
-        const promptContent = promptsResult.prompts[promptName];
-        this.questionElement.innerText = promptContent;
-  
+        const promptContent = promptsResult.prompts?.[promptName] || '';
+        this.questionElement.innerText = promptContent;  
+
         // APIキーの取得
         const apiKeyResult = await this.getFromStorage('apiKey');
         const apiKey = apiKeyResult.apiKey;
   
         // プロンプトメッセージの作成
-        const promptMessage = {
-            role: "user",
-            content: promptContent + "「" + selectedText + "」"
-        };
+        let promptMessage;
+        if (promptName) {
+            const promptContent = promptsResult.prompts[promptName];
+            this.questionElement.innerText = promptContent;
+            promptMessage = {
+                role: "user",
+                content: promptContent + "「" + selectedText + "」"
+            };
+        } else {
+            promptMessage = {
+                role: "user",
+                content: selectedText
+            };
+        }
   
         try {
             // OpenAIのAPIリクエスト
@@ -69,8 +76,8 @@ class Investigator {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                // 'model': 'gpt-4',
-                'model': 'gpt-3.5-turbo',
+                'model': 'gpt-4',
+                // 'model': 'gpt-3.5-turbo',
                 'max_tokens': 1000,
                 'temperature': 1,
                 'top_p': 1,
@@ -81,7 +88,7 @@ class Investigator {
             });
   
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('GPTリクエストに失敗しました。送信文字数の削減・「拡張機能設定」からAPIキーを設定見直しを行ってください。');
             }
   
             // 応答データの処理
@@ -111,7 +118,7 @@ chrome.runtime.sendMessage({method: "getSelectedText"}, function(response) {
     const selectedText = response.selectedText;
     const promptName = response.promptName;
     if (selectedText && promptName) {
-        investigator.promptSelectElement.value = promptName; // 追加：プロンプト名の設定
+        investigator.promptSelectElement.value = promptName;
         investigator.investigateExecute(selectedText, promptName);
     }
 });

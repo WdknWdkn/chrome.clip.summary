@@ -40,3 +40,8 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         createContextMenus(); // プロンプト変更時にメニューを更新
     }
 });
+
+// 拡張機能アイコンがクリックされたときに新しいタブでpopup.htmlを開く
+chrome.action.onClicked.addListener((tab) => {
+    chrome.tabs.create({ url: "popup.html" });
+  });

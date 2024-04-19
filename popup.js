@@ -4,9 +4,10 @@ class Investigator {
         this.loadingElement = document.getElementById('loading');
         this.promptSelectElement = document.getElementById('prompt_select');
         this.submitButton = document.getElementById('submit_button');
-        this.inputElement = document.getElementById('input_error');
-        this.questionElement = document.getElementById('question_error');
+        this.inputElement = document.getElementById('input'); // IDを修正
+        this.questionElement = document.getElementById('question'); // IDを修正
         this.resultElement = document.getElementById('result');
+        this.promptWarningElement = document.getElementById('prompt_warning'); // 警告表示用エレメントの追加
 
         // プロンプトのロード
         this.loadPrompts();
@@ -15,11 +16,11 @@ class Investigator {
     async loadPrompts() {
         const promptsResult = await this.getFromStorage('prompts');
         if (!promptsResult.prompts || Object.keys(promptsResult.prompts).length === 0) {
+            this.promptWarningElement.innerText = 'プロンプトが見つかりません。'; // 警告メッセージを設定
             return;
         }
 
         const promptKeys = Object.keys(promptsResult.prompts);
-
         for (let promptName of promptKeys) {
           const option = document.createElement('option');
           option.value = promptName;
@@ -29,46 +30,29 @@ class Investigator {
 
         this.promptWarningElement.innerText = '';
     }
-  
-    // Chromeストレージからキーに対応するデータを取得するメソッド
+
     async getFromStorage(key) {
         return new Promise(resolve => chrome.storage.sync.get([key], resolve));
     }
-  
-    // GPTリクエストをするメソッド
+
     async investigateExecute(selectedText, promptName) {
-        // ローディングの表示と選択したテキストのセット
         this.resultElement.innerText = '';
         this.loadingElement.style.display = 'inline-block';
         this.inputElement.value = selectedText;
-  
-        // プロンプトの取得と表示
+
         const promptsResult = await this.getFromStorage('prompts');
         const promptContent = promptsResult.prompts?.[promptName] || '';
-        this.questionElement.innerText = promptContent;  
+        this.questionElement.innerText = promptContent;
 
-        // APIキーの取得
         const apiKeyResult = await this.getFromStorage('apiKey');
         const apiKey = apiKeyResult.apiKey;
-  
-        // プロンプトメッセージの作成
-        let promptMessage;
-        if (promptName) {
-            const promptContent = promptsResult.prompts[promptName];
-            this.questionElement.innerText = promptContent;
-            promptMessage = {
-                role: "user",
-                content: promptContent + "「" + selectedText + "」"
-            };
-        } else {
-            promptMessage = {
-                role: "user",
-                content: selectedText
-            };
-        }
-  
+
+        const promptMessage = {
+            role: "user",
+            content: promptContent ? `${promptContent}「${selectedText}」` : selectedText
+        };
+
         try {
-            // OpenAIのAPIリクエスト
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
               method: 'POST',
               headers: {
@@ -77,7 +61,6 @@ class Investigator {
               },
               body: JSON.stringify({
                 'model': 'gpt-4',
-                // 'model': 'gpt-3.5-turbo',
                 'max_tokens': 1000,
                 'temperature': 1,
                 'top_p': 1,
@@ -86,12 +69,11 @@ class Investigator {
                 'messages': [promptMessage],
               })
             });
-  
+
             if (!response.ok) {
-                throw new Error('GPTリクエストに失敗しました。送信文字数の削減・「拡張機能設定」からAPIキーを設定見直しを行ってください。');
+                throw new Error('GPTリクエストに失敗しました。APIキーの設定を見直してください。');
             }
-  
-            // 応答データの処理
+
             const data = await response.json();
             if (data.error) {
                 throw new Error(data.error);
@@ -103,17 +85,15 @@ class Investigator {
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error);
             alert('エラーが発生しました: ' + error.message);
+            this.resultElement.innerText = 'エラー: ' + error.message; // ユーザー向けエラーメッセージ
         } finally {
-            // ローディングの非表示
             this.loadingElement.style.display = 'none';
         }
     }
 }
-  
-// Investigatorクラスのインスタンス化
+
 const investigator = new Investigator();
-  
-// 選択したテキストとプロンプト名を取得して調査を開始
+
 chrome.runtime.sendMessage({method: "getSelectedText"}, function(response) {
     const selectedText = response.selectedText;
     const promptName = response.promptName;
@@ -122,23 +102,15 @@ chrome.runtime.sendMessage({method: "getSelectedText"}, function(response) {
         investigator.investigateExecute(selectedText, promptName);
     }
 });
-  
-// 他の部分からのメッセージを受け取り、調査を開始
+
 chrome.runtime.onMessage.addListener(function(request) {
-    console.log(request);
     if (request.method === "getSelectedPrompt") {
-        const selectedText = request.selectedText;
-        const selectedPrompt = request.promptName;
-        if (selectedText && selectedPrompt) {
-          investigator.investigateExecute(selectedText, selectedPrompt);
-        }
+        investigator.investigateExecute(request.selectedText, request.promptName);
     }
 });
 
-  // submitボタンのクリックイベントリスナー
 document.getElementById('submit_button').addEventListener('click', function() {
-    const selectedText = document.getElementById('input_error').value;
-    const selectedPrompt = document.getElementById('prompt_select').value;
+    const selectedText = investigator.inputElement.value;
+    const selectedPrompt = investigator.promptSelectElement.value;
     investigator.investigateExecute(selectedText, selectedPrompt);
 });
-  

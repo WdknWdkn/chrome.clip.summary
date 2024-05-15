@@ -76,7 +76,7 @@ class Investigator {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                'model': 'gpt-4',
+                'model': 'gpt-4o',
                 // 'model': 'gpt-3.5-turbo',
                 'max_tokens': 1000,
                 'temperature': 1,
